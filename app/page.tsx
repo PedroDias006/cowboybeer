@@ -4,12 +4,10 @@ import Navbar from "@/components/Navbar";
 import ReviewsCarousel from "@/components/ReviewsCarousel";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, type ReactNode } from "react";
+import { useRef, useState } from "react";
 import {
   FaArrowLeft,
   FaArrowRight,
-  FaCalendarAlt,
-  FaClock,
   FaExpandAlt,
   FaGoogle,
   FaInstagram,
@@ -127,10 +125,19 @@ const PARTNERS = [
   { name: "Laut Premium Beer", src: "/parcerias/laut.png" },
   { name: "Cowboy House", src: "/parcerias/cowboy-house.png" },
   { name: "Nome da Parceria 4", src: "/parcerias/parceiro-04.png" },
-  // Repetição para manter o loop perfeito na animação em monitores grandes
   { name: "Laut Premium Beer", src: "/parcerias/laut.png" },
   { name: "Cowboy House", src: "/parcerias/cowboy-house.png" },
   { name: "Nome da Parceria 4", src: "/parcerias/parceiro-04.png" },
+];
+
+// --- LISTA DAS 7 FOTOS DA ATRAÇÃO (PADRÃO VERTICAL) ---
+const ATRACAO_PHOTOS = [
+  "/atracao/foto-01.jpg",
+  "/atracao/foto-02.jpg",
+  "/atracao/foto-03.jpg",
+  "/atracao/foto-04.jpg",
+  "/atracao/foto-05.jpg",
+  "/atracao/foto-06.jpg",
 ];
 
 function SectionHeader({
@@ -171,132 +178,11 @@ function SectionHeader({
   );
 }
 
-function PrimaryButton({
-  href,
-  children,
-}: {
-  href: string;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center justify-center rounded-full bg-[#E89E34] px-6 py-4 text-sm font-bold uppercase tracking-[0.2em] text-white transition hover:bg-[#d18d2f] md:px-8"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function SecondaryButton({
-  href,
-  children,
-}: {
-  href: string;
-  children: ReactNode;
-}) {
-  return (
-    <Link
-      href={href}
-      className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-6 py-4 text-sm uppercase tracking-[0.2em] text-white transition hover:border-[#E89E34]/60 hover:bg-white/10 md:px-8"
-    >
-      {children}
-    </Link>
-  );
-}
-
-function ReviewCard({ name, time, text }: Review) {
-  return (
-    <div className="h-full rounded-[28px] border border-white/10 bg-white/5 p-7 backdrop-blur-sm md:p-8">
-      <div className="mb-6 flex items-center gap-3 text-[#E89E34]">
-        {Array.from({ length: 5 }).map((_, index) => (
-          <FaStar key={index} className="text-sm" />
-        ))}
-      </div>
-      <p className="text-[15px] leading-relaxed text-stone-200 md:text-base">
-        {text}
-      </p>
-      <div className="mt-6 border-t border-white/10 pt-5">
-        <div className="font-semibold text-white">{name}</div>
-        <div className="text-sm text-stone-400">{time}</div>
-      </div>
-    </div>
-  );
-}
-
-function LiveStatusBadge({
-  inicio,
-  fim,
-  diaDaSemana,
-}: {
-  inicio: string;
-  fim: string;
-  diaDaSemana: number;
-}) {
-  const now = new Date();
-  const brTime = new Date(
-    now.toLocaleString("en-US", { timeZone: "America/Sao_Paulo" })
-  );
-
-  const currentDay = brTime.getDay();
-  const currentHour = brTime.getHours();
-  const currentMinute = brTime.getMinutes();
-
-  const [startHour, startMin] = inicio.split(":").map(Number);
-  const [endHour, endMin] = fim.split(":").map(Number);
-
-  const currentTimeInMins = currentHour * 60 + currentMinute;
-  const startTimeInMins = startHour * 60 + startMin;
-  const endTimeInMins = endHour * 60 + endMin;
-
-  let status = null;
-  let text = "";
-  let colorClass = "";
-
-  if (currentDay === diaDaSemana) {
-    if (
-      currentTimeInMins >= startTimeInMins - 30 &&
-      currentTimeInMins < startTimeInMins
-    ) {
-      status = "EM_BREVE";
-      text = "Começa em breve";
-      colorClass = "bg-[#E89E34]/10 text-[#E89E34] border-[#E89E34]/30";
-    } else if (
-      currentTimeInMins >= startTimeInMins &&
-      currentTimeInMins <= endTimeInMins - 30
-    ) {
-      status = "AO_VIVO";
-      text = "Ao vivo";
-      colorClass = "bg-red-500/10 text-red-400 border-red-500/30 animate-pulse";
-    } else if (
-      currentTimeInMins > endTimeInMins - 30 &&
-      currentTimeInMins <= endTimeInMins
-    ) {
-      status = "FECHA_BREVE";
-      text = "Fecha em breve";
-      colorClass = "bg-[#E89E34]/10 text-[#E89E34] border-[#E89E34]/30";
-    } else if (currentTimeInMins > endTimeInMins) {
-      status = "ENCERRADO";
-      text = "Encerrado";
-      colorClass = "bg-stone-500/10 text-stone-400 border-stone-500/30";
-    }
-  }
-
-  if (!status) return null;
-
-  return (
-    <div
-      className={`mb-6 inline-flex w-fit items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.2em] md:text-xs ${colorClass}`}
-    >
-      {status === "AO_VIVO" && <span className="h-2 w-2 rounded-full bg-red-500" />}
-      {text}
-    </div>
-  );
-}
-
 export default function CowboyBeerPage() {
   const [activeGallery, setActiveGallery] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  
+  const atracaoScrollRef = useRef<HTMLDivElement>(null);
 
   const EXPERIENCIA_GALLERIES: Record<string, { src: string; alt: string }[]> =
     {
@@ -350,6 +236,24 @@ export default function CowboyBeerPage() {
     }
   };
 
+  const scrollAtracaoNext = () => {
+    if (atracaoScrollRef.current) {
+      atracaoScrollRef.current.scrollBy({
+        left: atracaoScrollRef.current.clientWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const scrollAtracaoPrev = () => {
+    if (atracaoScrollRef.current) {
+      atracaoScrollRef.current.scrollBy({
+        left: -atracaoScrollRef.current.clientWidth,
+        behavior: "smooth",
+      });
+    }
+  };
+
   return (
     <main className="relative w-full max-w-[100vw] overflow-x-hidden bg-cowboy-dark text-white selection:bg-[#E89E34] selection:text-white">
       <style
@@ -360,7 +264,6 @@ export default function CowboyBeerPage() {
           overscroll-behavior-x: none;
         }
 
-        /* ANIMAÇÕES PARA A FAIXA DE PARCERIAS */
         @keyframes scroll-left-to-right {
           0% { transform: translateX(-50%); }
           100% { transform: translateX(0%); }
@@ -368,7 +271,6 @@ export default function CowboyBeerPage() {
         .animate-marquee-lr {
           animation: scroll-left-to-right 25s linear infinite;
         }
-        /* Efeito de fade nas laterais para ficar elegante */
         .mask-horizontal-fade {
           -webkit-mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
           mask-image: linear-gradient(to right, transparent, black 15%, black 85%, transparent);
@@ -452,28 +354,21 @@ export default function CowboyBeerPage() {
         </div>
       </header>
 
-      {/* --- NOVA SEÇÃO: PARCERIAS (LOGO TICKER LIMPO) --- */}
       <section className="border-b border-white/10 bg-[#0f0c0a] py-6 md:py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-5 md:flex-row md:gap-12 md:px-6">
-          
-          {/* Texto Fixo na Esquerda */}
           <div className="shrink-0 text-center md:text-left">
             <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#E89E34]">
               Nossas Parcerias
             </span>
           </div>
 
-          {/* Carrossel Infinito das Logos (Esquerda p/ Direita) */}
           <div className="relative flex w-full overflow-hidden mask-horizontal-fade">
             <div className="flex w-max animate-marquee-lr items-center gap-12 md:gap-16">
-              
-              {/* Duplicamos a renderização das logos para o loop ficar perfeito */}
               {[...Array(2)].map((_, i) => (
                 <div key={i} className="flex items-center gap-12 md:gap-16">
                   {PARTNERS.map((partner, index) => (
                     <div
                       key={index}
-                      // Removido o bg, border e rounded. Ajustado o tamanho pra foto respirar solta.
                       className="relative h-16 w-28 shrink-0 md:h-20 md:w-36"
                     >
                       <Image
@@ -486,14 +381,14 @@ export default function CowboyBeerPage() {
                   ))}
                 </div>
               ))}
-
             </div>
           </div>
         </div>
       </section>
 
-      <section id="atracao" className="bg-cowboy-light px-5 py-20 md:px-6 md:py-28">
-        <div className="mx-auto max-w-5xl">
+      {/* --- SEÇÃO DE ATRAÇÃO REFEITA: CARD MAIOR E PROPORÇÃO DE CARTAZ (4:5) --- */}
+      <section id="atracao" className="bg-cowboy-light py-20 md:py-28 overflow-hidden relative">
+        <div className="mx-auto max-w-5xl px-5 md:px-6">
           <SectionHeader
             eyebrow="Música ao vivo"
             title="Atração da Semana"
@@ -501,65 +396,50 @@ export default function CowboyBeerPage() {
             theme="light"
             center={true}
           />
+        </div>
 
-          <div className="relative mt-14 overflow-hidden rounded-[32px] shadow-2xl shadow-stone-900/10 transition-all duration-500 hover:shadow-stone-900/20">
-            <div className="relative h-[480px] w-full sm:h-[550px] md:h-[600px]">
-              <Image
-                src="/home/banda.webp"
-                alt="Foto da atração ao vivo"
-                fill
-                sizes="(max-width: 1024px) 100vw, 1024px"
-                className="object-cover object-top transition-transform duration-1000 hover:scale-105"
-              />
-
-              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-
-              <div className="absolute left-6 top-6 z-10 md:left-8 md:top-8">
-                <LiveStatusBadge inicio="20:00" fim="23:30" diaDaSemana={5} />
-              </div>
-
-              <div className="absolute inset-x-0 bottom-0 flex flex-col justify-between gap-6 p-6 md:flex-row md:items-end md:p-8">
-                <div className="flex flex-col items-start gap-4">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-[#E89E34]/30 bg-black/40 px-4 py-2 text-[10px] font-bold uppercase tracking-[0.25em] text-[#E89E34] backdrop-blur-md">
-                    Palco Principal
-                  </div>
-                  <p className="max-w-xs text-sm leading-relaxed text-stone-300 md:text-base">
-                    Reúna os amigos e venha curtir o melhor da música ao vivo para
-                    acompanhar seus cortes e drinks.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur-md sm:flex-nowrap md:gap-8 md:p-6">
-                  <div className="flex items-start gap-3 text-white">
-                    <FaCalendarAlt className="mt-0.5 text-xl text-[#E89E34]" />
-                    <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-stone-300">
-                        Data
-                      </div>
-                      <div className="mt-1 whitespace-nowrap text-base font-medium md:text-lg">
-                        Nesta Sexta
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="hidden h-10 w-px bg-white/20 sm:block" />
-
-                  <div className="flex items-start gap-3 text-white">
-                    <FaClock className="mt-0.5 text-xl text-[#E89E34]" />
-                    <div>
-                      <div className="text-[10px] uppercase tracking-[0.2em] text-stone-300">
-                        Horário
-                      </div>
-                      <div className="mt-1 whitespace-nowrap text-base font-medium md:text-lg">
-                        20:00 às 23:30
-                      </div>
-                    </div>
-                  </div>
+        {/* Wrapper centralizado (aumentei o max-width aqui) */}
+        <div className="relative mt-14 mx-auto w-full max-w-[420px] sm:max-w-[500px] md:max-w-[560px]">
+          
+          <div
+            ref={atracaoScrollRef}
+            className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
+            {ATRACAO_PHOTOS.map((src, index) => (
+              <div 
+                key={index} 
+                className="relative w-full shrink-0 snap-center px-4" 
+              >
+                {/* Proporção travada em 4/5 (padrão de cartaz de Instagram) e cor de fundo escura */}
+                <div className="relative w-full aspect-[4/5] overflow-hidden rounded-[24px] shadow-2xl shadow-stone-900/20 bg-stone-900">
+                  <Image
+                    src={src}
+                    alt={`Atração da semana foto ${index + 1}`}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 600px"
+                    className="object-contain" // Mudei para object-contain para garantir que NENHUMA letra seja cortada!
+                  />
                 </div>
               </div>
-            </div>
+            ))}
           </div>
+
+          <button
+            onClick={scrollAtracaoPrev}
+            className="absolute -left-12 md:-left-16 top-1/2 hidden h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-stone-900 text-white opacity-60 transition-all hover:bg-[#E89E34] hover:opacity-100 md:flex z-10"
+            aria-label="Foto anterior"
+          >
+            <FaArrowLeft className="text-xl" />
+          </button>
+          
+          <button
+            onClick={scrollAtracaoNext}
+            className="absolute -right-12 md:-right-16 top-1/2 hidden h-14 w-14 -translate-y-1/2 items-center justify-center rounded-full bg-stone-900 text-white opacity-60 transition-all hover:bg-[#E89E34] hover:opacity-100 md:flex z-10"
+            aria-label="Próxima foto"
+          >
+            <FaArrowRight className="text-xl" />
+          </button>
         </div>
       </section>
 
