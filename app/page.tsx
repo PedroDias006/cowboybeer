@@ -301,6 +301,7 @@ export default function CowboyBeerPage() {
             alt="Cowboy Beer desktop hero image"
             fill
             priority
+            quality={75}
             className="hidden object-cover object-center md:block"
           />
 
@@ -315,6 +316,7 @@ export default function CowboyBeerPage() {
               alt="Cowboy Beer Logo"
               width={120}
               height={120}
+              quality={85}
               className="object-contain"
               priority
             />
@@ -375,6 +377,9 @@ export default function CowboyBeerPage() {
                         src={partner.src}
                         alt={partner.name}
                         fill
+                        quality={60}
+                        sizes="(max-width: 768px) 112px, 144px"
+                        loading="lazy"
                         className="object-contain grayscale transition-all duration-300 hover:grayscale-0"
                       />
                     </div>
@@ -386,7 +391,6 @@ export default function CowboyBeerPage() {
         </div>
       </section>
 
-      {/* --- SEÇÃO DE ATRAÇÃO REFEITA: CARD MAIOR E PROPORÇÃO DE CARTAZ (4:5) --- */}
       <section id="atracao" className="bg-cowboy-light py-20 md:py-28 overflow-hidden relative">
         <div className="mx-auto max-w-5xl px-5 md:px-6">
           <SectionHeader
@@ -398,9 +402,7 @@ export default function CowboyBeerPage() {
           />
         </div>
 
-        {/* Wrapper centralizado (aumentei o max-width aqui) */}
         <div className="relative mt-14 mx-auto w-full max-w-[420px] sm:max-w-[500px] md:max-w-[560px]">
-          
           <div
             ref={atracaoScrollRef}
             className="flex w-full snap-x snap-mandatory overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden"
@@ -411,14 +413,15 @@ export default function CowboyBeerPage() {
                 key={index} 
                 className="relative w-full shrink-0 snap-center px-4" 
               >
-                {/* Proporção travada em 4/5 (padrão de cartaz de Instagram) e cor de fundo escura */}
                 <div className="relative w-full aspect-[4/5] overflow-hidden rounded-[24px] shadow-2xl shadow-stone-900/20 bg-stone-900">
                   <Image
                     src={src}
                     alt={`Atração da semana foto ${index + 1}`}
                     fill
+                    quality={60}
+                    loading="lazy"
                     sizes="(max-width: 768px) 100vw, 600px"
-                    className="object-contain" // Mudei para object-contain para garantir que NENHUMA letra seja cortada!
+                    className="object-contain"
                   />
                 </div>
               </div>
@@ -471,6 +474,8 @@ export default function CowboyBeerPage() {
                 src={EXPERIENCIA_GALLERIES.ambiente[0].src}
                 alt="Ambiente interno do Cowboy Beer"
                 fill
+                quality={60}
+                loading="lazy"
                 sizes="(max-width: 1024px) 100vw, 66vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
               />
@@ -503,6 +508,8 @@ export default function CowboyBeerPage() {
                   src={EXPERIENCIA_GALLERIES.sabores[0].src}
                   alt="Prato e cortes do Cowboy Beer"
                   fill
+                  quality={60}
+                  loading="lazy"
                   sizes="(max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -530,6 +537,8 @@ export default function CowboyBeerPage() {
                   src={EXPERIENCIA_GALLERIES.drinks[0].src}
                   alt="Drinks autorais do Cowboy Beer"
                   fill
+                  quality={60}
+                  loading="lazy"
                   sizes="(max-width: 1024px) 50vw, 33vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
@@ -579,6 +588,8 @@ export default function CowboyBeerPage() {
                 src={EXPERIENCIA_GALLERIES[activeGallery][currentImageIndex].src}
                 alt={EXPERIENCIA_GALLERIES[activeGallery][currentImageIndex].alt}
                 fill
+                quality={80}
+                sizes="100vw"
                 className="object-contain"
                 priority
               />
@@ -624,7 +635,9 @@ export default function CowboyBeerPage() {
                 src="/logo.png"
                 alt="Cowboy Beer Logo"
                 fill
+                quality={70}
                 sizes="112px"
+                loading="lazy"
                 className="object-contain p-3"
               />
             </div>
