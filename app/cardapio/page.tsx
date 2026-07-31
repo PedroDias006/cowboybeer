@@ -6,6 +6,9 @@ import { useEffect, useMemo, useState } from "react";
 import { FaArrowLeft, FaArrowRight, FaSearch, FaTimes } from "react-icons/fa";
 import { menuCategories } from "./menuData";
 
+type MenuItem =
+  (typeof menuCategories)[number]["items"][number];
+
 const normalizeText = (text: string) => {
   if (!text) return "";
   return text
@@ -17,7 +20,8 @@ const normalizeText = (text: string) => {
 export default function Cardapio() {
   const [activeCategory, setActiveCategory] = useState(menuCategories[0].id);
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  const [selectedItem, setSelectedItem] =
+    useState<MenuItem | null>(null);
 
   useEffect(() => {
     if (searchTerm !== "") return;
@@ -109,7 +113,10 @@ export default function Cardapio() {
 
     slider.dataset.dragged = "false";
 
-    slider.classList.add("cursor-grabbing");
+    slider.classList.add(
+      "cursor-grabbing",
+      "is-dragging"
+    );
   };
 
   const handleMouseLeaveOrUp = (
@@ -119,7 +126,10 @@ export default function Cardapio() {
 
     slider.dataset.isDown = "false";
 
-    slider.classList.remove("cursor-grabbing");
+    slider.classList.remove(
+      "cursor-grabbing",
+      "is-dragging"
+    );
   };
 
   const handleMouseMove = (
@@ -141,7 +151,7 @@ export default function Cardapio() {
 
     const x = e.pageX - slider.offsetLeft;
 
-    const walk = (x - startX) * 2;
+    const walk = (x - startX) * 1.25;
 
     if (Math.abs(walk) > 5) {
       slider.dataset.dragged = "true";
@@ -199,10 +209,8 @@ export default function Cardapio() {
       <style
         dangerouslySetInnerHTML={{
           __html: `
-          @import url('https://fonts.googleapis.com/css2?family=Rye&display=swap');
-
           .font-western {
-            font-family: 'Rye', cursive;
+            font-family: var(--font-rye), Georgia, serif;
             font-weight: 400;
           }
 
@@ -227,6 +235,24 @@ export default function Cardapio() {
             background-color: rgba(82, 39, 15, 0.45);
           }
 
+          .horizontal-slider {
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior-inline: contain;
+            scroll-behavior: smooth;
+            touch-action: pan-x pan-y;
+          }
+
+          .horizontal-slider.is-dragging {
+            scroll-behavior: auto;
+            scroll-snap-type: none;
+            user-select: none;
+          }
+
+          .menu-section {
+            content-visibility: auto;
+            contain-intrinsic-size: auto 560px;
+          }
+
           @media (hover: none) and (pointer: coarse) {
             .custom-scrollbar::-webkit-scrollbar {
               display: none;
@@ -235,6 +261,13 @@ export default function Cardapio() {
             .custom-scrollbar {
               -ms-overflow-style: none;
               scrollbar-width: none;
+            }
+          }
+
+          @media (max-width: 767px) {
+            .product-strip {
+              scroll-padding-inline: 1rem;
+              scroll-snap-type: x proximity;
             }
           }
         `,
@@ -276,7 +309,7 @@ export default function Cardapio() {
         <div className="w-full border-t border-stone-200 bg-white">
           <div
             id="nav-container"
-            className="draggable-slider custom-scrollbar mx-auto flex max-w-7xl cursor-grab overflow-x-auto px-4"
+            className="draggable-slider horizontal-slider custom-scrollbar mx-auto flex max-w-7xl cursor-grab overflow-x-auto px-3 md:px-4"
             onMouseDown={handleMouseDown}
             onMouseLeave={handleMouseLeaveOrUp}
             onMouseUp={handleMouseLeaveOrUp}
@@ -298,9 +331,9 @@ export default function Cardapio() {
                   )
                     return;
 
-                  scrollToCategory(cat.id);
+                    scrollToCategory(cat.id);
                 }}
-                className={`flex items-center gap-3 whitespace-nowrap border-b-2 px-5 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all duration-300 md:px-6 md:text-sm ${
+                className={`flex items-center gap-2 whitespace-nowrap border-b-2 px-4 py-3 text-[10px] font-bold uppercase tracking-[0.16em] transition-all duration-300 md:gap-3 md:px-6 md:py-4 md:text-sm md:tracking-[0.2em] ${
                   activeCategory === cat.id &&
                   searchTerm === ""
                     ? "border-[#52270F] bg-stone-50/50 text-[#52270F]"
@@ -318,13 +351,13 @@ export default function Cardapio() {
         </div>
       </header>
 
-      <main className="relative z-10 w-full overflow-x-hidden px-0 pb-24 pt-44 md:pt-56">
-        <div className="mx-auto mb-10 max-w-2xl px-4 text-center md:mb-16">
-          <span className="mb-4 block text-[10px] font-bold uppercase tracking-[0.4em] text-[#52270F] md:text-xs">
+      <main className="relative z-10 w-full overflow-x-hidden px-0 pb-20 pt-40 md:pb-24 md:pt-56">
+        <div className="mx-auto mb-8 max-w-2xl px-4 text-center md:mb-16">
+          <span className="mb-3 block text-[10px] font-bold uppercase tracking-[0.4em] text-[#52270F] md:mb-4 md:text-xs">
             O que vai ser hoje?
           </span>
 
-          <h1 className="mb-8 font-western text-5xl leading-tight text-[#1C1917] drop-shadow-sm md:text-7xl">
+          <h1 className="mb-6 font-western text-4xl leading-tight text-[#1C1917] drop-shadow-sm md:mb-8 md:text-7xl">
             Menu
             <br />
             <span className="text-[#E89E34]">
@@ -356,34 +389,45 @@ export default function Cardapio() {
           </div>
         </div>
 
-        <div className="w-full max-w-[100vw] space-y-16 md:space-y-24">
+        <div className="w-full max-w-[100vw] space-y-12 md:space-y-24">
           {filteredCategories.map((category) => (
             <section
               key={category.id}
               id={category.id}
-              className="w-full scroll-mt-48"
+              className="menu-section w-full scroll-mt-44 md:scroll-mt-48"
             >
-              <div className="mx-auto mb-6 flex max-w-7xl items-center gap-4 px-4 md:mb-10 md:px-8">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-stone-100 md:h-14 md:w-14">
-                  <category.icon className="text-xl text-[#52270F] md:text-2xl" />
+              <div className="mx-auto mb-4 flex max-w-7xl items-center gap-3 px-4 md:mb-10 md:gap-4 md:px-8">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-stone-100 md:h-14 md:w-14">
+                  <category.icon className="text-lg text-[#52270F] md:text-2xl" />
                 </div>
 
-                <h2 className="font-serif text-3xl font-bold uppercase leading-tight tracking-wider text-[#1C1917] md:text-4xl">
+                <h2 className="font-serif text-2xl font-bold uppercase leading-tight tracking-wider text-[#1C1917] md:text-4xl">
                   {category.title}
                 </h2>
               </div>
 
               <div className="relative w-full">
-                <div className="draggable-slider custom-scrollbar flex snap-x snap-mandatory cursor-grab gap-4 overflow-x-auto px-4 pb-8 pt-2 md:gap-6 md:px-8">
+                <div className="draggable-slider horizontal-slider product-strip custom-scrollbar flex snap-x snap-proximity cursor-grab gap-3 overflow-x-auto px-4 pb-6 pt-1 md:gap-6 md:px-8 md:pb-8 md:pt-2">
                   {category.items.map((item, index) => (
                     <div
                       key={index}
-                      onClick={() =>
-                        setSelectedItem(item)
-                      }
-                      className="group flex w-[260px] shrink-0 snap-center cursor-pointer flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl sm:snap-start md:w-[300px]"
+                      onClick={(e) => {
+                        const slider =
+                          e.currentTarget.closest(
+                            ".draggable-slider"
+                          ) as HTMLElement;
+
+                        if (
+                          slider?.dataset.dragged ===
+                          "true"
+                        )
+                          return;
+
+                        setSelectedItem(item);
+                      }}
+                      className="group flex w-[210px] shrink-0 snap-start cursor-pointer flex-col overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-lg min-[430px]:w-[220px] md:w-[300px] md:rounded-2xl md:hover:-translate-y-2 md:hover:shadow-xl"
                     >
-                      <div className="relative flex aspect-[4/5] w-full overflow-hidden border-b border-stone-100 bg-stone-100/50">
+                      <div className="relative flex aspect-square w-full overflow-hidden border-b border-stone-100 bg-stone-100/50 md:aspect-[4/5]">
                         <Image
                           src={
                             item.photo ||
@@ -391,32 +435,34 @@ export default function Cardapio() {
                           }
                           alt={item.name}
                           fill
-                          quality={60}
+                          quality={48}
                           loading="lazy"
-                          sizes="(max-width: 768px) 260px, 300px"
-                          className="object-cover transition-transform duration-700 group-hover:scale-105"
+                          decoding="async"
+                          draggable={false}
+                          sizes="(max-width: 429px) 210px, (max-width: 767px) 220px, 300px"
+                          className="object-contain p-2 transition-transform duration-500 group-hover:scale-[1.03] md:p-3"
                         />
                       </div>
 
-                      <div className="flex flex-grow flex-col p-5 md:p-6">
+                      <div className="flex flex-grow flex-col p-4 md:p-6">
                         <div className="flex-grow">
-                          <h3 className="mb-2 text-sm font-bold uppercase leading-snug tracking-wider text-stone-900 transition-colors group-hover:text-[#52270F] md:text-base">
+                          <h3 className="mb-1.5 text-xs font-bold uppercase leading-snug tracking-wide text-stone-900 transition-colors group-hover:text-[#52270F] md:mb-2 md:text-base md:tracking-wider">
                             {item.name}
                           </h3>
 
                           {item.desc && (
-                            <p className="line-clamp-2 text-xs font-light leading-relaxed text-stone-500 md:text-sm">
+                            <p className="line-clamp-2 text-[11px] font-light leading-relaxed text-stone-500 md:text-sm">
                               {item.desc}
                             </p>
                           )}
                         </div>
 
-                        <div className="mt-5 flex items-center justify-between border-t border-stone-100/50 pt-4">
-                          <span className="font-sans text-xl font-bold tracking-tight text-[#E89E34]">
+                        <div className="mt-3 flex items-center justify-between border-t border-stone-100/50 pt-3 md:mt-5 md:pt-4">
+                          <span className="font-sans text-lg font-bold tracking-tight text-[#E89E34] md:text-xl">
                             {item.price}
                           </span>
 
-                          <FaArrowRight className="text-stone-300 transition-colors duration-300 group-hover:text-[#E89E34]" />
+                          <FaArrowRight className="text-xs text-stone-300 transition-colors duration-300 group-hover:text-[#E89E34] md:text-base" />
                         </div>
                       </div>
                     </div>

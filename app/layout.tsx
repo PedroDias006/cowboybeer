@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Playfair_Display } from "next/font/google";
+import { Geist, Geist_Mono, Playfair_Display, Rye } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -17,6 +17,12 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
 });
 
+const rye = Rye({
+  variable: "--font-rye",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "Cowboy Beer | Churrascaria & Bar",
   description: "Sabor forte, ambiente marcante e visual de respeito.",
@@ -30,7 +36,7 @@ export default function RootLayout({
   return (
     <html
       lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} scroll-smooth`}
+      className={`${geistSans.variable} ${geistMono.variable} ${playfair.variable} ${rye.variable} scroll-smooth`}
     >
       <body className="antialiased">{children}</body>
     </html>
