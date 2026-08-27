@@ -65,7 +65,7 @@ export const menuCategories = [
       { name: "Eisenbahn IPA Long Neck", price: "R$ 9,99", desc: "", photo: "/cardapio/cervejasechop/eisenbahn-ipa-long-neck.webp" },
       { name: "Estrella Galicia Long Neck", price: "R$ 9,99", desc: "", photo: "/cardapio/oficial/estrella-galicia-long-neck.webp" },
       { name: "Estrella Galicia Zero Long Neck", price: "R$ 9,99", desc: "", photo: "/cardapio/oficial/estrella-galicia-zero-long-neck.webp" },
-      { name: "Promoção Estrella Galicia Lager 600ml", price: "R$ 9,99", desc: "", photo: "/cardapio/oficial/promocao-estrella-galicia-lager-600ml.webp" },
+      { name: "Promoção Estrella Galicia Lager 600ml", price: "R$ 14,99", desc: "", photo: "/cardapio/oficial/promocao-estrella-galicia-lager-600ml.webp" },
       { name: "Heineken 600ml", price: "R$ 19,99", desc: "", photo: "/cardapio/cervejasechop/heineken-600ml.webp" },
       { name: "Heineken Long Neck", price: "R$ 11,99", desc: "", photo: "/cardapio/cervejasechop/heineken-long-neck.webp" },
       { name: "Heineken Long Neck Zero", price: "R$ 11,99", desc: "", photo: "/cardapio/cervejasechop/heineken-long-neck-zero.webp" },
