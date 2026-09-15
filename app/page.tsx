@@ -136,8 +136,6 @@ const ATRACAO_PHOTOS = [
   "/atracao/foto-02.jpg",
   "/atracao/foto-03.jpg",
   "/atracao/foto-04.jpg",
-  "/atracao/foto-05.jpg",
-  "/atracao/foto-06.jpg",
 ];
 
 function SectionHeader({
